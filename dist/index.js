@@ -1,4 +1,6 @@
-// Especialidades
+// ==========================
+// ESPECIALIDADES
+// ==========================
 const cardiologia = {
     id: 1,
     nome: "Cardiologia",
@@ -12,7 +14,9 @@ const pediatria = {
     id: 3,
     nome: "Pediatria",
 };
-// Médicos
+// ==========================
+// MÉDICOS
+// ==========================
 const medico1 = {
     id: 1,
     nome: "Dr. Roberto Silva",
@@ -34,7 +38,9 @@ const medico3 = {
     especialidade: pediatria,
     ativo: true,
 };
-// Pacientes
+// ==========================
+// PACIENTES
+// ==========================
 const paciente1 = {
     id: 1,
     nome: "Carlos Andrade",
@@ -54,6 +60,9 @@ const paciente3 = {
     cpf: "456.789.123-00",
     email: "pedro@email.com",
 };
+// ==========================
+// FUNÇÕES
+// ==========================
 function criarConsulta(id, medico, paciente, data, valor) {
     return {
         id,
@@ -88,10 +97,6 @@ Valor: ${valorFormatado}
 Status: ${consulta.status}
 `;
 }
-const consulta1 = criarConsulta(1, medico1, paciente1, new Date(), 350);
-const consultaConfirmada = confirmarConsulta(consulta1);
-console.log("=== CONSULTA CONFIRMADA ===");
-console.log(exibirConsulta(consultaConfirmada));
 function listarConsultasPorStatus(consultas, status) {
     return consultas.filter((consulta) => consulta.status === status);
 }
@@ -100,10 +105,46 @@ function listarConsultasFuturas(consultas) {
     hoje.setHours(0, 0, 0, 0);
     return consultas.filter((consulta) => consulta.data >= hoje);
 }
-const consultas = [];
 function calcularFaturamento(consultas) {
     return consultas
         .filter((consulta) => consulta.status === "realizada")
         .reduce((total, consulta) => total + consulta.valor, 0);
 }
+// ==========================
+// CRIANDO CONSULTAS
+// ==========================
+const consulta1 = criarConsulta(1, medico1, paciente1, new Date(), 350);
+const consultaConfirmada = confirmarConsulta(consulta1);
+const consulta2 = criarConsulta(2, medico2, paciente2, new Date("2026-03-10"), 500);
+const consulta2Confirmada = confirmarConsulta(consulta2);
+const consulta3 = criarConsulta(3, medico3, paciente3, new Date("2026-01-15"), 250);
+const consulta3Realizada = Object.assign(Object.assign({}, consulta3), { status: "realizada" });
+const consulta4 = criarConsulta(4, medico1, paciente2, new Date("2025-12-20"), 400);
+const consulta4Cancelada = cancelarConsulta(consulta4);
+const consulta5 = criarConsulta(5, medico2, paciente1, new Date("2026-02-05"), 600);
+// ==========================
+// ARRAY PRINCIPAL DE CONSULTAS
+// ==========================
+const consultas = [
+    consultaConfirmada,
+    consulta2Confirmada,
+    consulta3Realizada,
+    consulta4Cancelada,
+    consulta5,
+];
+// ==========================
+// TESTES
+// ==========================
+console.log("=== CONSULTAS CONFIRMADAS ===");
+listarConsultasPorStatus(consultas, "confirmada")
+    .forEach((c) => console.log(exibirConsulta(c)));
+console.log("=== CONSULTAS FUTURAS ===");
+listarConsultasFuturas(consultas)
+    .forEach((c) => console.log(exibirConsulta(c)));
+console.log("=== FATURAMENTO TOTAL ===");
+const total = calcularFaturamento(consultas);
+console.log(total.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+}));
 export {};

@@ -4,21 +4,28 @@ import { StatusConsulta } from "./types/statusConsulta";
 import { Medico } from "./interfaces/medico";
 import { Consulta } from "./interfaces/consulta";
 
-// Especialidades
+// ==========================
+// ESPECIALIDADES
+// ==========================
 const cardiologia: Especialidade = {
   id: 1,
   nome: "Cardiologia",
 };
+
 const ortopedia: Especialidade = {
   id: 2,
   nome: "Ortopedia",
   descricao: "Tratamento de ossos e articulações",
 };
+
 const pediatria: Especialidade = {
   id: 3,
   nome: "Pediatria",
 };
-// Médicos
+
+// ==========================
+// MÉDICOS
+// ==========================
 const medico1: Medico = {
   id: 1,
   nome: "Dr. Roberto Silva",
@@ -26,6 +33,7 @@ const medico1: Medico = {
   especialidade: cardiologia,
   ativo: true,
 };
+
 const medico2: Medico = {
   id: 2,
   nome: "Dra. Ana Paula Costa",
@@ -33,6 +41,7 @@ const medico2: Medico = {
   especialidade: ortopedia,
   ativo: true,
 };
+
 const medico3: Medico = {
   id: 3,
   nome: "Dr. João Mendes",
@@ -40,13 +49,17 @@ const medico3: Medico = {
   especialidade: pediatria,
   ativo: true,
 };
-// Pacientes
+
+// ==========================
+// PACIENTES
+// ==========================
 const paciente1: Paciente = {
   id: 1,
   nome: "Carlos Andrade",
   cpf: "123.456.789-00",
   email: "carlos@email.com",
 };
+
 const paciente2: Paciente = {
   id: 2,
   nome: "Maria Silva",
@@ -54,6 +67,7 @@ const paciente2: Paciente = {
   email: "maria@email.com",
   telefone: "(11) 98765-4321",
 };
+
 const paciente3: Paciente = {
   id: 3,
   nome: "Pedro Santos",
@@ -61,6 +75,9 @@ const paciente3: Paciente = {
   email: "pedro@email.com",
 };
 
+// ==========================
+// FUNÇÕES
+// ==========================
 function criarConsulta(
   id: number,
   medico: Medico,
@@ -100,6 +117,7 @@ function exibirConsulta(consulta: Consulta): string {
     style: "currency",
     currency: "BRL",
   });
+
   return `
 Consulta #${consulta.id}
 Médico: ${consulta.medico.nome}
@@ -111,17 +129,6 @@ Status: ${consulta.status}
 `;
 }
 
-const consulta1 = criarConsulta(
-  1,
-  medico1,
-  paciente1,
-  new Date(),
-  350
-);
-const consultaConfirmada = confirmarConsulta(consulta1);
-console.log("=== CONSULTA CONFIRMADA ===");
-console.log(exibirConsulta(consultaConfirmada));
-
 function listarConsultasPorStatus(
   consultas: Consulta[],
   status: StatusConsulta
@@ -132,13 +139,87 @@ function listarConsultasPorStatus(
 function listarConsultasFuturas(consultas: Consulta[]): Consulta[] {
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
+
   return consultas.filter((consulta) => consulta.data >= hoje);
 }
-
-const consultas: Consulta[] = [];
 
 function calcularFaturamento(consultas: Consulta[]): number {
   return consultas
     .filter((consulta) => consulta.status === "realizada")
     .reduce((total, consulta) => total + consulta.valor, 0);
 }
+
+// ==========================
+// CRIANDO CONSULTAS
+// ==========================
+const consulta1 = criarConsulta(1, medico1, paciente1, new Date(), 350);
+const consultaConfirmada = confirmarConsulta(consulta1);
+
+const consulta2 = criarConsulta(
+  2,
+  medico2,
+  paciente2,
+  new Date("2026-03-10"),
+  500
+);
+const consulta2Confirmada = confirmarConsulta(consulta2);
+
+const consulta3 = criarConsulta(
+  3,
+  medico3,
+  paciente3,
+  new Date("2026-01-15"),
+  250
+);
+const consulta3Realizada: Consulta = {
+  ...consulta3,
+  status: "realizada",
+};
+
+const consulta4 = criarConsulta(
+  4,
+  medico1,
+  paciente2,
+  new Date("2025-12-20"),
+  400
+);
+const consulta4Cancelada = cancelarConsulta(consulta4);
+
+const consulta5 = criarConsulta(
+  5,
+  medico2,
+  paciente1,
+  new Date("2026-02-05"),
+  600
+);
+
+// ==========================
+// ARRAY PRINCIPAL DE CONSULTAS
+// ==========================
+const consultas: Consulta[] = [
+  consultaConfirmada,
+  consulta2Confirmada,
+  consulta3Realizada,
+  consulta4Cancelada!,
+  consulta5,
+];
+
+// ==========================
+// TESTES
+// ==========================
+console.log("=== CONSULTAS CONFIRMADAS ===");
+listarConsultasPorStatus(consultas, "confirmada")
+  .forEach((c) => console.log(exibirConsulta(c)));
+
+console.log("=== CONSULTAS FUTURAS ===");
+listarConsultasFuturas(consultas)
+  .forEach((c) => console.log(exibirConsulta(c)));
+
+console.log("=== FATURAMENTO TOTAL ===");
+const total = calcularFaturamento(consultas);
+console.log(
+  total.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  })
+);
